@@ -32,7 +32,7 @@ class _AddEditPetScreenState extends State<AddEditPetScreen> {
         id: widget.pet?.id ?? PetRepository.generateId(),
         name: nameCtrl.text,
         type: typeCtrl.text,
-        age: int.parse(ageCtrl.text),
+        age: int.tryParse(ageCtrl.text) ?? 0,
       );
 
       if (widget.pet == null) {

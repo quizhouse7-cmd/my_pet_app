@@ -1,24 +1,36 @@
-import '../models/pet.dart';
 import 'dart:math';
+import '../db/database_helper.dart';
+import '../models/pet.dart';
 
 class PetRepository {
-  static final List<Pet> _pets = [];
-
-  static List<Pet> getPets() => _pets;
-
-  static void addPet(Pet pet) {
-    _pets.add(pet);
+  static Future<List<Pet>> getPets() async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.query('pets');
+    return result.map((e) => Pet.fromMap(e)).toList();
   }
 
-  static void updatePet(Pet pet) {
-    final index = _pets.indexWhere((p) => p.id == pet.id);
-    if (index != -1) {
-      _pets[index] = pet;
-    }
+  static Future<void> addPet(Pet pet) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.insert('pets', pet.toMap());
   }
 
-  static void deletePet(String id) {
-    _pets.removeWhere((p) => p.id == id);
+  static Future<void> updatePet(Pet pet) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      'pets',
+      pet.toMap(),
+      where: 'id = ?',
+      whereArgs: [pet.id],
+    );
+  }
+
+  static Future<void> deletePet(String id) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.delete(
+      'pets',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   static String generateId() {
