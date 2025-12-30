@@ -19,8 +19,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // ⬅️ INCREASE VERSION
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -30,8 +31,18 @@ class DatabaseHelper {
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         type TEXT NOT NULL,
-        age INTEGER NOT NULL
+        age INTEGER NOT NULL,
+        imagePath TEXT
       )
     ''');
+  }
+
+  Future<void> _onUpgrade(
+      Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Add imagePath column safely
+      await db.execute(
+          'ALTER TABLE pets ADD COLUMN imagePath TEXT');
+    }
   }
 }

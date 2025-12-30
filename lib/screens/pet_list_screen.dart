@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../data/pet_repository.dart';
@@ -26,7 +28,9 @@ class _PetListScreenState extends State<PetListScreen> {
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No pets added yet'));
+            return const Center(
+              child: Text('No pets added yet'),
+            );
           }
 
           final pets = snapshot.data!;
@@ -35,7 +39,19 @@ class _PetListScreenState extends State<PetListScreen> {
             itemCount: pets.length,
             itemBuilder: (context, index) {
               final pet = pets[index];
+
               return ListTile(
+                leading: pet.imagePath != null &&
+                        File(pet.imagePath!).existsSync()
+                    ? CircleAvatar(
+                        radius: 24,
+                        backgroundImage:
+                            FileImage(File(pet.imagePath!)),
+                      )
+                    : const CircleAvatar(
+                        radius: 24,
+                        child: Icon(Icons.pets),
+                      ),
                 title: Text(pet.name),
                 subtitle: Text('${pet.type}, ${pet.age} years'),
                 trailing: IconButton(
