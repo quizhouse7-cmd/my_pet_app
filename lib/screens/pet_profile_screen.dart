@@ -45,17 +45,20 @@ class PetProfileScreen extends StatelessWidget {
       height: 280,
       width: double.infinity,
       color: Colors.grey.shade200,
-      child: pet.imagePath != null &&
-              File(pet.imagePath!).existsSync()
-          ? Image.file(
-              File(pet.imagePath!),
-              fit: BoxFit.cover,
-            )
-          : const Icon(
-              Icons.pets,
-              size: 120,
-              color: Colors.grey,
-            ),
+      child: Hero(
+        tag: 'pet_${pet.id}',
+        child: pet.imagePath != null &&
+                File(pet.imagePath!).existsSync()
+            ? Image.file(
+                File(pet.imagePath!),
+                fit: BoxFit.cover,
+                )
+            : const Icon(
+                Icons.pets,
+                size: 120,
+                color: Colors.grey,
+                ),
+        ),
     );
   }
 

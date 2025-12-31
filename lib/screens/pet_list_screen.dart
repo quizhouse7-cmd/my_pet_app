@@ -42,17 +42,21 @@ class _PetListScreenState extends State<PetListScreen> {
               final pet = pets[index];
 
               return ListTile(
-                leading: pet.imagePath != null &&
-                        File(pet.imagePath!).existsSync()
-                    ? CircleAvatar(
-                        radius: 24,
-                        backgroundImage:
-                            FileImage(File(pet.imagePath!)),
-                      )
-                    : const CircleAvatar(
-                        radius: 24,
-                        child: Icon(Icons.pets),
-                      ),
+                leading: Hero(
+                  tag: 'pet_${pet.id}',
+                  child: pet.imagePath != null &&
+                          File(pet.imagePath!).existsSync()
+                      ? CircleAvatar(
+                          radius: 24,
+                          backgroundImage:
+                              FileImage(File(pet.imagePath!)),
+                        )
+                      : const CircleAvatar(
+                          radius: 24,
+                          child: Icon(Icons.pets),
+                        ),
+                ),
+
                 title: Text(pet.name),
                 subtitle: Text('${pet.type}, ${pet.age} years'),
                 trailing: IconButton(
