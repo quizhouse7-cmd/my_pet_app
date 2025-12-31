@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 import '../data/pet_repository.dart';
 import '../models/pet.dart';
+
 
 class AddEditPetScreen extends StatefulWidget {
   final Pet? pet;
@@ -40,20 +43,36 @@ class _AddEditPetScreenState extends State<AddEditPetScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: source,
-      imageQuality: 80,
-    );
+  final XFile? pickedFile = await _picker.pickImage(
+    source: source,
+    imageQuality: 80,
+  );
 
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
+  if (pickedFile == null) return;
+
+  // Get permanent app directory
+  final directory = await getApplicationDocumentsDirectory();
+
+  // Create unique file name
+  final fileName =
+      'pet_${DateTime.now().millisecondsSinceEpoch}${p.extension(pickedFile.path)}';
+
+  // New permanent path
+  final permanentPath = p.join(directory.path, fileName);
+
+  // Copy image to permanent location
+  final File newImage =
+      await File(pickedFile.path).copy(permanentPath);
+
+  setState(() {
+    _image = newImage;
+  });
+}
+
 
   void _savePet() async {
     if (_formKey.currentState!.validate()) {
+      print('Saving pet with image: ${_image?.path}');
       final pet = Pet(
         id: widget.pet?.id ?? PetRepository.generateId(),
         name: nameCtrl.text,

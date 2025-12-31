@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../data/pet_repository.dart';
 import '../models/pet.dart';
 import 'add_edit_pet_screen.dart';
+import 'pet_profile_screen.dart';
 
 class PetListScreen extends StatefulWidget {
   const PetListScreen({super.key});
@@ -65,7 +66,7 @@ class _PetListScreenState extends State<PetListScreen> {
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => AddEditPetScreen(pet: pet),
+                      builder: (_) => PetProfileScreen(pet: pet),
                     ),
                   );
                   setState(() {});
