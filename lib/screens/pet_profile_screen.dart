@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../models/pet.dart';
 import 'add_edit_pet_screen.dart';
+import '../data/pet_repository.dart';
+
 
 class PetProfileScreen extends StatelessWidget {
   final Pet pet;
@@ -14,27 +16,61 @@ class PetProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(pet.name),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddEditPetScreen(pet: pet),
-                ),
-              );
-              Navigator.pop(context); // Refresh list after edit
-            },
-          ),
-        ],
-      ),
+      title: Text(pet.name),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddEditPetScreen(pet: pet),
+              ),
+            );
+            Navigator.pop(context); // Refresh list
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () => _confirmDelete(context),
+        ),
+      ],
+    ),
       body: ListView(
         children: [
           _buildImage(),
           const SizedBox(height: 24),
           _buildInfoCard(),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete Pet'),
+        content: const Text(
+          'Are you sure you want to delete this pet? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await PetRepository.deletePet(pet.id);
+
+              Navigator.pop(context); // close dialog
+              Navigator.pop(context); // close profile screen
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Delete'),
+          ),
         ],
       ),
     );
