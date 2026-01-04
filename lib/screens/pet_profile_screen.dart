@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import '../models/pet.dart';
 import 'add_edit_pet_screen.dart';
 import '../data/pet_repository.dart';
+import '../data/reminder_repository.dart';
+import '../models/reminder.dart';
+
 
 
 class PetProfileScreen extends StatelessWidget {
@@ -34,6 +37,12 @@ class PetProfileScreen extends StatelessWidget {
           icon: const Icon(Icons.delete),
           onPressed: () => _confirmDelete(context),
         ),
+        IconButton(
+          icon: const Icon(Icons.alarm_add),
+          onPressed: () {
+            // Next step: Add reminder screen
+          },
+        ),
       ],
     ),
       body: ListView(
@@ -41,6 +50,46 @@ class PetProfileScreen extends StatelessWidget {
           _buildImage(),
           const SizedBox(height: 24),
           _buildInfoCard(),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Reminders',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          FutureBuilder<List<Reminder>>(
+            future: ReminderRepository.getRemindersForPet(pet.id),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('No reminders added'),
+                );
+              }
+
+              final reminders = snapshot.data!;
+
+              return Column(
+                children: reminders.map((r) {
+                  return ListTile(
+                    leading: const Icon(Icons.alarm),
+                    title: Text(r.title),
+                    subtitle: Text(
+                      '${r.type} • ${r.date.toLocal().toString().split(' ')[0]}',
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        await ReminderRepository.deleteReminder(r.id);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+          ),
         ],
       ),
     );

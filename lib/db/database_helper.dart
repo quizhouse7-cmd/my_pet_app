@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2, // ⬅️ INCREASE VERSION
+      version: 3, // ⬅️ INCREASE VERSION
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -35,6 +35,15 @@ class DatabaseHelper {
         imagePath TEXT
       )
     ''');
+    await db.execute('''
+      CREATE TABLE reminders (
+        id TEXT PRIMARY KEY,
+        petId TEXT NOT NULL,
+        title TEXT NOT NULL,
+        date TEXT NOT NULL,
+        type TEXT NOT NULL
+      )
+    ''');
   }
 
   Future<void> _onUpgrade(
@@ -43,6 +52,17 @@ class DatabaseHelper {
       // Add imagePath column safely
       await db.execute(
           'ALTER TABLE pets ADD COLUMN imagePath TEXT');
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE reminders (
+          id TEXT PRIMARY KEY,
+          petId TEXT NOT NULL,
+          title TEXT NOT NULL,
+          date TEXT NOT NULL,
+          type TEXT NOT NULL
+        )
+      ''');
     }
   }
 }
