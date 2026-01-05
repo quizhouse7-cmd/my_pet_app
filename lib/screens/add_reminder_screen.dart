@@ -3,6 +3,8 @@ import 'package:uuid/uuid.dart';
 
 import '../data/reminder_repository.dart';
 import '../models/reminder.dart';
+import '../services/notification_service.dart';
+
 
 class AddReminderScreen extends StatefulWidget {
   final String petId;
@@ -56,6 +58,19 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     );
 
     await ReminderRepository.addReminder(reminder);
+
+    try {
+      await NotificationService.scheduleNotification(
+        id: reminder.id.hashCode,
+        title: 'Pet Reminder',
+        body: '${reminder.title} for your pet',
+        scheduledDate: reminder.date,
+      );
+      print('Notification scheduled');
+    } catch (e) {
+      print('Notification error: $e');
+    }
+
     Navigator.pop(context, true);
   }
 
