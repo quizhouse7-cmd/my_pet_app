@@ -7,6 +7,7 @@ import 'add_edit_pet_screen.dart';
 import '../data/pet_repository.dart';
 import '../data/reminder_repository.dart';
 import '../models/reminder.dart';
+import 'add_reminder_screen.dart';
 
 
 
@@ -39,8 +40,17 @@ class PetProfileScreen extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.alarm_add),
-          onPressed: () {
-            // Next step: Add reminder screen
+          onPressed: () async {
+            final added = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddReminderScreen(petId: pet.id),
+              ),
+            );
+
+            if (added == true) {
+              Navigator.pop(context);
+            }
           },
         ),
       ],
